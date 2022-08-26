@@ -1,11 +1,12 @@
 // 下载mp3
 
 const fs = require('fs')
+const path = require('path')
 const axios = require('axios')
-const filenamify = require('filenamify')
+const config = require('../util/config')
+const filenamify = require('../util/filenamify')
 
 const downloadFile2 = async (url, targetFile) => {
-  console.log('begin file downloaded', url, targetFile)
   try {
     const response = await axios({
       method: 'GET',
@@ -14,12 +15,15 @@ const downloadFile2 = async (url, targetFile) => {
     })
     // console.log(response, response.code)
     const file = filenamify(targetFile)
-    const pf = response.data.pipe(fs.createWriteStream(file))
+    const p = path.join(config.downloadDir, file)
+    console.log('begin file downloaded', url, p)
+    fs.mkdirSync(path.dirname(p), { recursive: true })
+    const pf = response.data.pipe(fs.createWriteStream(p))
     pf.on('finish', () => {
       console.log('file downloaded successfully :)', url, file)
     })
   } catch (error) {
-    throw new Error(error)
+    console.log(error)
   }
 }
 
