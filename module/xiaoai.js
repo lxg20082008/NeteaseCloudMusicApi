@@ -1,7 +1,6 @@
 const fs = require('fs')
 const path = require('path')
 const XiaoAi = require('xiaoai-tts')
-const config = require('../util/config.json')
 
 const sessionFilePath = path.join('session')
 
@@ -15,7 +14,7 @@ async function play(url, say) {
     // 通过 Session 登录
     client = new XiaoAi(JSON.parse(session))
   } catch (e) {
-    client = new XiaoAi(config.xiaomi_user, config.xiaomi_pwd)
+    client = new XiaoAi(process.env.XIAOMI_USER, process.env.XIAOMI_PWD)
 
     const session = await client.connect()
 
@@ -23,7 +22,11 @@ async function play(url, say) {
     fs.writeFileSync(sessionFilePath, JSON.stringify(session))
   }
   // 在这里继续执行后续操作
-  await client.say('你好,我是小猪果果,小猪奇奇')
+  if (url) {
+    await client.playUrl(url)
+  } else {
+    await client.say(say)
+  }
 }
 
 module.exports = async (query, request) => {
