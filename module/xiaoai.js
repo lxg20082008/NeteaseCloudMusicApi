@@ -13,6 +13,7 @@ async function play(url, say) {
 
     // 通过 Session 登录
     client = new XiaoAi(JSON.parse(session))
+    await client.getStatus()
   } catch (e) {
     client = new XiaoAi(process.env.XIAOMI_USER, process.env.XIAOMI_PWD)
 
